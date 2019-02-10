@@ -1,0 +1,4 @@
+---
+- name: Install nfs tools
+  yum: name="{{ nfs_package }}" state=latest
+  

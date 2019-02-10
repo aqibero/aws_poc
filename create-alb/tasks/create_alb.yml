@@ -1,0 +1,60 @@
+---
+
+- name: Create ALB Target Group
+  elb_target_group:
+    name: my-alb-target-group
+    vpc_id: "{{ vpc_id }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    region: "{{ region }}"
+    protocol: HTTP
+    port: 80
+    health_check_path: "{{ health_check_file }}"
+    health_check_port: "{{ health_check_port }}"
+    health_check_protocol: "{{ health_check_protocol }}"
+    successful_response_codes: "200,250-260"
+    deregistration_delay_timeout: "600"
+    target_type: instance
+    state: present
+    targets:
+      - Id: "{{ item.instance_id }}"
+        Port: 80
+    wait_timeout: 30
+    wait: True
+  with_items: "{{ ec2.instances }}"
+  ignore_errors: yes
+  register: alb-target-group
+
+
+- name: Create an ALB with Listeners
+  elb_application_lb:
+    name: my-test-alb
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    region: "{{ region }}"
+    subnets:
+      - "{{ subnet_a.subnet.id }}"
+      - "{{ subnet_b.subnet.id }}"
+      - "{{ subnet_c.subnet.id }}"
+    security_groups:
+      - "Web DMZ"
+    scheme: internet-facing
+    listeners:
+      - Protocol: HTTP
+        Port: 80
+        DefaultActions:
+          - Type: forward
+            TargetGroupName: my-alb-target-group
+       # Certificates:
+       #   - CertificateArn: arn:aws:iam::12345678987:server-certificate/test.domain.com
+       # SslPolicy: ELBSecurityPolicy-2015-05
+        Rules:
+          - Conditions:
+              - Field: path-pattern
+                Values:
+                  - '/phpinfo.php'
+            Priority: '1'
+            Actions:
+              - TargetGroupName: my-alb-target-group
+                Type: forward
+    state: present

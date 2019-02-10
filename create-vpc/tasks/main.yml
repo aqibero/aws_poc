@@ -1,0 +1,4 @@
+---
+# tasks file for create-vpc
+- include_tasks: create_vpc.yml
+- include_tasks: create_security_group.yml

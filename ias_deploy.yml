@@ -1,0 +1,21 @@
+---
+- hosts: local
+  connection: local
+  vars_files:
+     - ~/Projects/aws-ias/vars_files/aws_access.vault
+     - ~/Projects/aws-ias/vars_files/aws_keys.yml
+  roles:
+     - create-vpc
+     - create-ec2
+     - create-alb
+
+- name: Run get_fingerprint.yml
+  import_playbook: get_fingerprint.yml
+
+- hosts: mywebservers
+  remote_user: ec2-user
+  become: yes
+  gather_facts: true
+  roles:
+    - deploy-webserver
+    - deploy-packages

@@ -1,0 +1,3 @@
+---
+# vars file for deploy-webserver
+php7_version: 72

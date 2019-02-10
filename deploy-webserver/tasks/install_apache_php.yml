@@ -1,0 +1,46 @@
+---
+  # Added EPEL Repositiry
+- name: Add EPEL Repository
+  yum_repository:
+    name: epel
+    description: EPEL yum repo
+    baseurl: "https://dl.fedoraproject.org/pub/epel/$releasever/$basearch/"
+    enabled: yes
+    gpgcheck: 1
+
+
+  # Import EPEL Repository GPG key
+- name: Import EPEL Repository GPG key
+  rpm_key:
+    key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+    state: present
+
+
+  # Added REMI repository
+- name: Add REMI Repository
+  yum_repository:
+    name: remi
+    description: "Remi's PHP {{ php7_version }} RPM repository for Enterprise Linux $releasever - $basearch"
+    mirrorlist: "http://rpms.remirepo.net/enterprise/$releasever/php{{ php7_version }}/mirror"
+    enabled: yes
+    gpgcheck: 1
+    gpgkey: http://rpms.remirepo.net/RPM-GPG-KEY-remi
+
+
+# Install latest Apache and PHP7 package
+- name: Install Apache
+  yum: name=httpd state=latest
+
+- name: Install PHP7
+  yum: name=php state=latest
+
+
+# Start Apache
+- name: Ensure Apache is up and running
+  service: name=httpd state=started
+
+# Create test file on the webserver
+- name: Upload test webpage
+  template:
+      src: ~/Projects/aws-ias/deploy-webserver/files/phpinfo.php
+      dest: /var/www/html/phpinfo.php

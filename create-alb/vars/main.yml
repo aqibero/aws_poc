@@ -1,0 +1,5 @@
+---
+# vars file for create-alb
+health_check_file: /phpinfo.php
+health_check_port: 80
+health_check_protocol: HTTP

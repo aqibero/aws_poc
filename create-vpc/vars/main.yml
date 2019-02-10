@@ -1,0 +1,27 @@
+# vars file for create-vpc
+---
+# Global Variables for aws VPC
+region: "ap-southeast-2"
+availability_zone_a: ap-southeast-2a
+availability_zone_b: ap-southeast-2b
+availability_zone_c: ap-southeast-2c
+vpc_cidr: 10.10.0.0/16
+vpc_name: "VPC for Ansible Provisioning"
+
+# Define VPC Subnet
+subnet_name: "Ansible Subnet"
+subnet_cidr_a: 10.10.0.0/20
+subnet_cidr_b: 10.10.16.0/20
+subnet_cidr_c: 10.10.32.0/20
+
+instance_subnets:
+  - { zone: "ap-southeast-2a", vpc_pvt_subnet: "{{ subnet_a.subnet.id }}" }
+  - { zone: "ap-southeast-2b", vpc_pvt_subnet: "{{ subnet_b.subnet.id }}" }
+  - { zone: "ap-southeast-2c", vpc_pvt_subnet: "{{ subnet_c.subnet.id }}" }
+
+# Define VPC Internet G, ateway Name
+igw_name: "Ansible IGW"
+
+# Define Security Group Name
+securitygroup_name: "Ansible Security Group"
+route_name: IGW Route

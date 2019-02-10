@@ -1,0 +1,16 @@
+---
+# vars file for create-ec2
+# Define aws ec2 instance tag
+ec2_tag: "webserver"
+ec2_environment: "Development"
+ec2_instance_owner: "Arnold Q. Ibero"
+
+
+#Define key pair local location and name
+ec2_key_directory: "/home/aibero/Projects/aws-ias/keys"
+keypair_name: "ansible_key"
+
+# Define ec2 Amazon Machine Image (AMI) to deploy
+instance_type: t2.micro # Red Hat Enterprise Linux 7.5 (HVM), SSD Volume Type - Free tier eligible
+image:  ami-67589505
+ec2_instance_count: 1 # Number of inatance(s) to spin on every availability zone

@@ -1,0 +1,62 @@
+---
+- name: Create EC2 instance(s)
+  with_items: "{{ instance_subnets }}"
+  ec2:
+    image: "{{ image }}"
+    instance_type: "{{ instance_type }}"
+    key_name: "{{ keypair.key.name }}"
+    wait: yes
+    region: "{{ region }}"
+    zone: "{{ item.zone }}"
+    group_id: "{{ security_group.group_id }}"
+    vpc_subnet_id: "{{ item.vpc_pvt_subnet }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    instance_tags:
+      Name: "{{ ec2_tag }}"
+      Environment: "{{ ec2_environment }}"
+      Owner: "{{ ec2_instance_owner }}"
+    exact_count: "{{ ec2_instance_count }}"
+    count_tag: web_pool
+  register: ec2
+
+- name: Get EC2 Instances Facts
+  ec2_instance_facts:
+      filters:
+         availability-zone:
+           - "{{ availability_zone_a }}"
+           - "{{ availability_zone_b }}"
+           - "{{ availability_zone_c }}"
+         instance-state-name: running
+      region: "{{ region }}"
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+  register: ec2
+
+- name: Add ec2 public IP to the inventory
+  with_items: "{{ ec2.instances}}"
+  add_host:
+    hostname: "{{ item.public_ip_address }}"
+    groupname: webservers
+
+- name: Add the newly created EC2 instance to the inventory
+  lineinfile:
+    dest: "./hosts"
+    regexp: "{{ item.public_ip_address }}"
+    insertafter: '^\[mywebservers\]'
+    line: "{{ item.public_ip_address }}"
+  with_items: "{{ ec2.instances}}"
+
+- debug: var=ec2.instances
+
+- name: Wait for ssh daemon to come up
+  wait_for:
+    host: "{{ item.public_ip_address }}"
+    port: 22
+    delay: 45
+    timeout: 320
+    state: started
+  with_items: "{{ ec2.instances }}"
+
+- name: Refresh Ansible inventory
+  meta: refresh_inventory

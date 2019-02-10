@@ -1,0 +1,3 @@
+---
+# vars file for deploy-packages
+nfs_package: nfs-utils # nfs-utils on RHEL/CentOS/Amazon Linux

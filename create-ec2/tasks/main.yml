@@ -1,0 +1,4 @@
+---
+# tasks file for create-ec2
+- include_tasks: create_ec2_keypair.yml
+- include_tasks: create_ec2_instance.yml

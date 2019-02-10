@@ -1,0 +1,95 @@
+---
+# tasks file for create-vpc
+- name: Create VPC
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_cidr }}"
+    region: "{{ region }}"
+    state: present
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+  register: vpc
+
+
+- name: Set VPC ID in a variable
+  set_fact:
+    vpc_id: "{{ vpc.vpc.id }}"
+
+
+- name: Set VPC ID in a variable
+  set_fact:
+    vpc_id: "{{ vpc.vpc.id }}"
+
+
+- name: Associate subnet A to the VPC
+  ec2_vpc_subnet:
+    az: "{{ availability_zone_a }}"
+    state: present
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    cidr: "{{ subnet_cidr_a }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    map_public: yes
+    resource_tags:
+      Name: "{{ subnet_name }}"
+  register: subnet_a
+
+
+- name: Associate subnet B to the VPC
+  ec2_vpc_subnet:
+    az: "{{ availability_zone_b }}"
+    state: present
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    cidr: "{{ subnet_cidr_b }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    map_public: yes
+    resource_tags:
+      Name: "{{ subnet_name }}"
+  register: subnet_b
+
+
+- name: Associate subnet C to the VPC
+  ec2_vpc_subnet:
+    az: "{{ availability_zone_c }}"
+    state: present
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    cidr: "{{ subnet_cidr_c }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    map_public: yes
+    resource_tags:
+      Name: "{{ subnet_name }}"
+  register: subnet_c
+
+
+- name: Create Internet Gateway
+  ec2_vpc_igw:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    state: present
+    tags:
+      Name: "{{ igw_name }}"
+  register: igw
+
+
+- name: Create route for each subnet
+  ec2_vpc_route_table:
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    subnets:
+      - "{{ subnet_a.subnet.id }}"
+      - "{{ subnet_b.subnet.id }}"
+      - "{{ subnet_c.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw.gateway_id }}"
+    tags:
+        Name: "{{ route_name }}"
