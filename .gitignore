@@ -1,1 +1,4 @@
-.vault_pass
+vars_files/vault_pass
+vars_files/aws_access.vault
+vars_files/ansible_key.pem
+vars_files/aws_access.vault
