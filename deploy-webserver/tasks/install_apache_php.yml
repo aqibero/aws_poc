@@ -42,5 +42,5 @@
 # Create test file on the webserver
 - name: Upload test webpage
   template:
-      src: ~/Projects/aws-ias/deploy-webserver/files/phpinfo.php
+      src: ~/Projects/aws/aws_poc/deploy-webserver/files/phpinfo.php
       dest: /var/www/html/phpinfo.php

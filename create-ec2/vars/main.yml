@@ -7,8 +7,8 @@ ec2_instance_owner: "Arnold Q. Ibero"
 
 
 #Define key pair local location and name
-ec2_key_directory: "~/Projects/aws/aws_poc/vars_files"
-keypair_name: "ansible_key"
+ec2_key_directory: "~/Projects/aws/aws_poc/vars_files/"
+keypair_name: "ansible_key.pem"
 
 # Define ec2 Amazon Machine Image (AMI) to deploy
 instance_type: t2.micro # Red Hat Enterprise Linux 7.5 (HVM), SSD Volume Type - Free tier eligible
