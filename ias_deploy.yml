@@ -8,7 +8,7 @@
      - create-vpc
      - create-ec2
      - create-alb
-
+#
 - name: Run get_fingerprint.yml
   import_playbook: get_fingerprint.yml
 
